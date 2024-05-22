@@ -83,6 +83,7 @@ class AddExercisesFragment : Fragment() {
                 exercisesAdapter.submitList(it)
             }
         }
+        searchExercises.setText("")
     }
 
     private fun onExerciseSelected(exercise: Exercise) {
@@ -112,5 +113,7 @@ class AddExercisesFragment : Fragment() {
             }
         }
     }
+
+    fun onSearchClicked(view: View) {}
 
 }
