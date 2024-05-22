@@ -2,6 +2,8 @@ package com.pdm.proiect_android_kotlin
 
 import android.os.Bundle
 import android.view.Menu
+import android.view.View
+import android.widget.TextView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
@@ -12,12 +14,21 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.pdm.proiect_android_kotlin.databinding.ActivityMain2Binding
+import com.pdm.proiect_android_kotlin.service.ExerciseService
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMain2Binding
+
+    companion object {
+        lateinit var email: String
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_home, R.id.nav_map, R.id.nav_slideshow
+                R.id.nav_home, R.id.nav_map, R.id.nav_add_exercises
             ), drawerLayout
         )
 
@@ -49,12 +60,26 @@ class MainActivity : AppCompatActivity() {
                     drawerLayout.closeDrawer(GravityCompat.START)
                     true
                 }
+                R.id.nav_add_exercises -> {
+                    val addExercisesFragment = AddExercisesFragment()
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.nav_host_fragment_content_main, addExercisesFragment)
+                        .addToBackStack(null)
+                        .commit()
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
                 else -> false
             }
         }
 
+
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        email = intent.getStringExtra("email") ?: "No Email"
+        setNavigationHeaderEmail(email)
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -66,4 +91,12 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
+
+    private fun setNavigationHeaderEmail(email: String) {
+        val navView: NavigationView = binding.navView
+        val headerView = navView.getHeaderView(0)
+        val userEmailTextView = headerView.findViewById<TextView>(R.id.userEmail)
+        userEmailTextView.text = email
+    }
+
 }
